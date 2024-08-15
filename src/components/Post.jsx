@@ -1,20 +1,32 @@
+import { format } from 'date-fns';
+
 import { Avatar } from './Avatar';
 import { Comment } from './Comment';
+
 import styles from './Post.module.css';
 
-export function Post(props) {
+export function Post({ author, content, publishedAt }) {
+  // const publishedDateFormatted = new Intl.DateTimeFormat('pt-BR', {
+  //   day: '2-digit',
+  //   month: 'long',
+  //   hour: '2-digit',
+  //   minute: '2-digit'
+  // }).format(publishedAt);
+
+  const publishedDateFormatted = format(publishedAt, "d 'de' LLLL 'às' HH:mm'h'");
+
   return (
     <article className={styles.post}>
       <header>
         <div className={styles.author}>
-          <Avatar src="https://github.com/engdanielcarneiro.png" />
+          <Avatar src={author.avatarUrl} />
           <div className={styles.authorInfo}>
-            <strong>Daniel Carneiro</strong>
-            <span>Software Engineer</span>
+            <strong>{author.name}</strong>
+            <span>{author.role}</span>
           </div>
         </div>
 
-        <time title='11 de Maio às 08:13' dateTime="2022-05-11 08:13:30">Publicado há 1h</time>
+        <time title='11 de Maio às 08:13' dateTime={publishedAt}>{publishedDateFormatted}</time>
       </header>
 
       <div className={styles.content}>
