@@ -1,16 +1,16 @@
-import { format, formatDistanceToNow } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
 
-import { Avatar } from './Avatar';
-import { Comment } from './Comment';
+import { Avatar } from './Avatar'
+import { Comment } from './Comment'
 
-import styles from './Post.module.css';
-import { useState } from 'react';
+import styles from './Post.module.css'
+import { useState } from 'react'
 
 
 export function Post({ author, publishedAt, content }) {
-  const [comments, setComments] = useState([]);
-  const [newCommentText, setNewCommentText] = useState('');
+  const [comments, setComments] = useState([])
+  const [newCommentText, setNewCommentText] = useState('')
 
 
   // const publishedDateFormatted = new Intl.DateTimeFormat('pt-BR', {
@@ -18,11 +18,11 @@ export function Post({ author, publishedAt, content }) {
   //   month: 'long',
   //   hour: '2-digit',
   //   minute: '2-digit'
-  // }).format(publishedAt);
+  // }).format(publishedAt)
 
   const publishedDateFormatted = format(publishedAt, "d 'de' LLLL 'às' HH:mm'h'", {
     locale: ptBR,
-  });
+  })
 
   const publishedDateRelativeToNow = formatDistanceToNow(publishedAt, {
     locale: ptBR,
@@ -30,16 +30,32 @@ export function Post({ author, publishedAt, content }) {
   })
 
   function handleCreateNewComment(e) {
-    e.preventDefault();
+    e.preventDefault()
 
-    setComments([...comments, newCommentText]);
+    setComments([...comments, newCommentText])
 
-    setNewCommentText('');
+    setNewCommentText('')
   }
 
   function handleNewCommentChange(e) {
-    setNewCommentText(e.target.value);
+    e.target.setCustomValidity("")
+    setNewCommentText(e.target.value)
   }
+
+  function handleNewCommentInvalid(e) {
+    e.target.setCustomValidity("Esse campo é obrigatório.")
+
+  }
+
+  function deleteComment(commentToUpdate) {
+
+    setComments(comments.filter((
+      comment
+    ) => comment !== commentToUpdate
+    ))
+  }
+
+  const isNewCommentEmpty = newCommentText.length == 0;
 
   return (
     <article className={styles.post}>
@@ -59,9 +75,9 @@ export function Post({ author, publishedAt, content }) {
         {
           content.map(line => {
             if (line.type === "paragraph") {
-              return <p>{line.content}</p>
+              return <p key={line.content}>{line.content}</p>
             } else if (line.type === "link") {
-              return <p><a href="#">{line.content}</a></p>
+              return <p key={line.content}><a href="#">{line.content}</a></p>
             }
           })
         }
@@ -75,16 +91,18 @@ export function Post({ author, publishedAt, content }) {
           placeholder='Deixe um comentário'
           value={newCommentText}
           onChange={handleNewCommentChange}
+          onInvalid={handleNewCommentInvalid}
+          required
         />
 
         <footer>
-          <button type='submit'>Publicar</button>
+          <button type='submit' disabled={isNewCommentEmpty}>Publicar</button>
         </footer>
       </form>
 
       <div className={styles.commentList}>
         {comments.map(comment => {
-          return <Comment content={comment} />
+          return <Comment onDeleteComment={deleteComment} key={comment} content={comment} />
         })}
       </div>
 
